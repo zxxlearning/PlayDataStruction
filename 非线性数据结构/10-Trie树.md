@@ -204,3 +204,181 @@ class Trie {
 > 内存消耗 :54.4 MB, 在所有 java 提交中击败了88.39%的用户
 
 #### 10.2.2 添加与搜索单词
+
+> 设计一个支持以下两种操作的数据结构：
+>
+> void addWord(word)
+> bool search(word)
+> search(word) 可以搜索文字或正则表达式字符串，字符串只包含字母 . 或 a-z 。 . 可以表示任何一个字母。
+>
+> 示例:
+>
+> addWord("bad")
+> addWord("dad")
+> addWord("mad")
+> search("pad") -> false
+> search("bad") -> true
+> search(".ad") -> true
+> search("b..") -> true
+> 说明:
+>
+> 你可以假设所有单词都是由小写字母 a-z 组成的。
+>
+
+```java
+import java.util.TreeMap;
+class WordDictionary {
+    private class Node{
+        private boolean isWord;
+        private TreeMap<Character, Node> next;
+        public Node(){
+            isWord = false;
+            next = new TreeMap<>();
+        }
+    }
+    private Node root;
+    /** Initialize your data structure here. */
+    public WordDictionary() {
+        root = new Node();
+    }
+    
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        Node cur = root;
+        for(int i = 0; i < word.length(); i ++){
+            char c = word.charAt(i);
+            if(cur.next.get(c) == null){
+                cur.next.put(c, new Node());
+            }
+            cur.next.put('.', new Node());
+            cur = cur.next.get(c);
+        }
+        if(!cur.isWord){
+            cur.isWord = true;
+        }
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    public boolean search(String word) {
+        return match(root, word, 0);
+    }
+    private boolean match(Node root, String word, int index){
+        //递归结束条件
+        if(index == word.length()){
+            return root.isWord;
+        }
+        //递归主体内容
+        char c = word.charAt(index);
+        // 当前判断的字符不是‘ . ’
+        if(c != '.'){
+            if(root.next.get(c) == null){
+                return false;
+            }
+            return match(root.next.get(c), word, index+1);
+        }else{ //当前判断的字符为‘ . ’，就要遍历所有的孩子节点的孩子节点们
+            for(char nextC : root.next.keySet()){
+                if( match(root.next.get(nextC), word, index+1) ){
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+}
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary obj = new WordDictionary();
+ * obj.addWord(word);
+ * boolean param_2 = obj.search(word);
+ */
+```
+
+> 执行用时 :102 ms, 在所有 java 提交中击败了57.88%的用户
+>
+> 内存消耗 :70 MB, 在所有 java 提交中击败了82.26%的用户
+
+#### 10.2.3 键值映射
+
+> 实现一个 MapSum 类里的两个方法，insert 和 sum。
+>
+> 对于方法 insert，你将得到一对（字符串，整数）的键值对。字符串表示键，整数表示值。如果键已经存在，那么原来的键值对将被替代成新的键值对。
+>
+> 对于方法 sum，你将得到一个表示前缀的字符串，你需要返回所有以该前缀开头的键的值的总和。
+>
+> 示例 1:
+>
+> 输入: insert("apple", 3), 输出: Null
+> 输入: sum("ap"), 输出: 3
+> 输入: insert("app", 2), 输出: Null
+> 输入: sum("ap"), 输出: 5
+
+```java
+import java.util.TreeMap;
+
+class MapSum {
+    public class Node{
+        private int val;
+        private TreeMap<Character, Node> next;
+        public Node(){
+            val = 0;
+            next = new TreeMap<>();
+        }
+    }
+    private Node root;
+    /** Initialize your data structure here. */
+    public MapSum() {
+        root = new Node();
+    }
+    
+    public void insert(String key, int val) {
+        Node cur = root;
+        for(int i = 0; i < key.length(); i ++){
+            char c = key.charAt(i);
+            if(cur.next.get(c) == null){
+                cur.next.put(c, new Node());
+            }
+            cur = cur.next.get(c);
+        }
+        cur.val = val; //不管等不等于0都重新赋值
+    }
+    
+    public int sum(String prefix) {
+        Node cur = root;
+        for(int i = 0; i < prefix.length(); i ++){
+            char c = prefix.charAt(i);
+            if(cur.next.get(c) == null){
+                return 0;
+            }
+            cur = cur.next.get(c);
+        }
+        return(sum(cur));
+    }
+
+    private int sum(Node root){
+        //递归终止条件
+        if(root.next.size() == 0){
+            return root.val;
+        }
+        //递归主体内容
+        int res = root.val; //把只有一个的情况先列出来
+        //然后可能有孩子
+        for(char nextC : root.next.keySet()){
+            // 对孩子再求val就是sum(cur.next.get(nextC))
+            res += sum(root.next.get(nextC));
+        }
+        return res;
+    }
+}
+
+/**
+ * Your MapSum object will be instantiated and called as such:
+ * MapSum obj = new MapSum();
+ * obj.insert(key,val);
+ * int param_2 = obj.sum(prefix);
+ */
+```
+
+> 执行用时 :9 ms, 在所有 java 提交中击败了83.14%的用户
+>
+> 内存消耗 :36.1 MB, 在所有 java 提交中击败了84.12%的用户

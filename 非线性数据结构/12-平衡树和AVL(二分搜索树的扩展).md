@@ -103,7 +103,7 @@ typora-copy-images-to: pics\12-平衡树和AVL(二分搜索树的扩展)
 
 ​	当新添加的**节点是加到了左边**时，需要执行右旋转，从而调整为平衡二叉树。插入节点在不平衡的节点的左侧的左侧。
 
-![img](H:\Learning\JAVA\Github_JavaLearning_Notes\PlayDataStruction\PlayDataStruction\非线性数据结构\pics\12-平衡树和AVL(二分搜索树的扩展)\A4B7DA5F66FE753154E6270CB3ED09AD.jpg)
+![img](H:\Learning\JAVA\Github_JavaLearning_Notes\PlayDataStruction\PlayDataStruction\非线性数据结构\pics\12-平衡树和AVL(二分搜索树的扩展)\右旋转.jpg)
 
 ```java
     //右旋转

@@ -280,15 +280,18 @@ private Node remove(Node root, int e){
 			root.right = null;
 			size --;
 			return rightC;	
+		}else{
+			//左右子树都有
+			//找左子树的最大
+			Node res = getMax(root.left); //先找到左子树最大那个节点，拿到一边
+			//size ++;
+			res.left = removeMax(root.left); // 删除左子树原有的最大的那个节点，然后拼在这个最大的节点的左端
+			res.right = root.right;
+			
+			root.left = null;
+			root.right = null;
+			//size --;
+			return res;
 		}
-		//左右子树都有
-		//找左子树的最大
-		Node res = getMax(root.left); //先找到左子树最大那个节点，拿到一边
-		res.left = removeMax(root.left); // 删除左子树原有的最大的那个节点，然后拼在这个最大的节点的左端
-		res.right = root.right;
-		
-		root.left = null;
-		root.right = null;
-		return res;
 	}
 }

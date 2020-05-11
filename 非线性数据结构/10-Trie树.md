@@ -1,12 +1,12 @@
 ## 10.1 Trie树
 
-​		Trie树是个==多叉树==，和之前学习的树的结构是不一样的。（也叫**前缀树**）
+​		Trie树是个**多叉树**，和之前学习的树的结构是不一样的。（也叫**前缀树**）
 
-​		有点地方把映射这种数据结构也叫做字典，字典表示的就是一个词条和一个释意相对应。通常Trie被用作处理字符串。查询每个条目的时间复杂度和字典中有多少条目无关。而和查询的单词长度有关，时间复杂度为O（w）,w是查询单词的长度。
+​		有点地方把映射这种数据结构也叫做字典，字典表示的就是一个词条和一个释意相对应。通常**Trie被用作处理字符串**。查询每个条目的时间复杂度和字典中有多少条目无关。而和查询的单词长度有关，时间复杂度为O（w）,w是查询单词的长度。
 
 **什么是Trie**
 
-​		每个节点有若干个指向下个节点的指针，因此封装Trie数据结构时，用Map < char, Node > 表示当前节点的孩子结点们。多叉树最头上只有一节点，没有值存在里面，只存着指向的孩子节点们。因此char存的是某个孩子节点的值，对应的Node是这个孩子节点的孩子节点们。
+​		每个节点有**若干个**指向下个节点的指针，因此封装Trie数据结构时，**用Map < char, Node > 表示当前节点的孩子结点们**。多叉树最头上只有一节点，没有值存在里面，只存着指向的孩子节点们。因此char存的是某个孩子节点的值，对应的Node是这个孩子节点的孩子节点们。
 
 #### 10.1.1 添加操作
 
@@ -36,7 +36,6 @@
 
 ```java
 //    递归的增加写法(最头上那个是没有东西的，只有一个，值是空，有多个孩子)
-//    递归不一定要有return啊，有时候是不能通过return进行连接的
     public void addDG(String word){
         add(root, word, 0);
     }
@@ -70,7 +69,7 @@
             }
             cur = cur.next.get(c);
         }
-        return cur.isWord;
+        return cur.isWord; //注意这里得返回cur.isWord 因为可能找到了那个单词的内容，但他没被存为单词
     }
 
 //    递归实现
@@ -203,6 +202,81 @@ class Trie {
 >
 > 内存消耗 :54.4 MB, 在所有 java 提交中击败了88.39%的用户
 
+另外:因为题目说定了只存26个字母，所以可以直接用数组表示，而且不需要真正存数据，26个字母数组的索引就可以对应这26个字母了。
+
+```java
+class Trie {
+    private class Node{
+        private boolean isWorld;
+        private Node[] next;
+
+        Node(){
+            isWorld = false;
+            next = new Node[26];
+        }
+    }
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public Trie() {
+        root = new Node();
+    }
+    
+    /** Inserts a word into the trie. */
+    public void insert(String word) {
+        Node cur = root;
+        for(int i = 0; i < word.length(); i ++){
+            char c = word.charAt(i);
+            if(cur.next[c-'a'] == null){
+                cur.next[c-'a'] = new Node();
+            }
+            cur = cur.next[c-'a'];
+        }
+        if(!cur.isWorld){
+            cur.isWorld = true;
+        }
+    }
+    
+    /** Returns if the word is in the trie. */
+    public boolean search(String word) {
+        Node cur = root;
+        for(int i = 0; i < word.length(); i ++){
+            char c = word.charAt(i);
+            if(cur.next[c-'a'] == null){
+                return false;
+            }
+            cur = cur.next[c-'a'];
+        }
+        return cur.isWorld;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) {
+        Node cur = root;
+        for(int i = 0; i < prefix.length(); i ++){
+            char c = prefix.charAt(i);
+            if(cur.next[c-'a'] == null){
+                return false;
+            }
+            cur = cur.next[c-'a'];
+        }
+        return true;
+    }
+}
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie obj = new Trie();
+ * obj.insert(word);
+ * boolean param_2 = obj.search(word);
+ * boolean param_3 = obj.startsWith(prefix);
+ */
+```
+
+> 执行用时 :41 ms, 在所有 Java 提交中击败了94.51%的用户
+>
+> 内存消耗 :49 MB, 在所有 Java 提交中击败了100.00%的用户
+
 #### 10.2.2 添加与搜索单词
 
 > 设计一个支持以下两种操作的数据结构：
@@ -294,9 +368,82 @@ class WordDictionary {
  */
 ```
 
-> 执行用时 :102 ms, 在所有 java 提交中击败了57.88%的用户
+> 执行用时 :94 ms, 在所有 Java 提交中击败了17.48%的用户
 >
-> 内存消耗 :70 MB, 在所有 java 提交中击败了82.26%的用户
+> 内存消耗 :59 MB, 在所有 Java 提交中击败了50.00%的用户
+
+另外: 跟第一道题一样的思路，用26长度的字符数组
+
+```java
+class WordDictionary {
+    private class Node{
+        private boolean isWorld;
+        private Node[] next;
+
+        Node(){
+            isWorld = false;
+            next = new Node[26];
+        }
+    }
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public WordDictionary() {
+        root = new Node();
+    }
+    
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        Node cur = root;
+        for(int i = 0; i < word.length(); i ++){
+            char c = word.charAt(i);
+            if(cur.next[c-'a'] == null){
+                cur.next[c-'a'] = new Node();
+            }
+            cur = cur.next[c-'a'];
+        }
+        if(!cur.isWorld){
+            cur.isWorld = true;
+        }
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    public boolean search(String word) {
+        return search(root, word, 0);
+    }
+    //递归查询
+    private boolean search(Node node, String word, int index){
+        if(index == word.length()){
+            return node.isWorld;
+        }
+        char c = word.charAt(index);
+        if(c == '.'){
+            for(int i = 0; i < 26; i ++){
+                if(node.next[i] != null && search(node.next[i], word, index+1)){
+                    return true;
+                }
+            }
+            return false;
+        }else{
+            if(node.next[c-'a'] == null){
+                return false;
+            }
+            return search(node.next[c-'a'], word, index+1);
+        }
+    }
+}
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary obj = new WordDictionary();
+ * obj.addWord(word);
+ * boolean param_2 = obj.search(word);
+ */
+```
+
+> 执行用时 :50 ms, 在所有 Java 提交中击败了91.86%的用户
+>
+> 内存消耗 :50.9 MB, 在所有 Java 提交中击败了100.00%的用户
 
 #### 10.2.3 键值映射
 
@@ -379,13 +526,78 @@ class MapSum {
  */
 ```
 
-> 执行用时 :9 ms, 在所有 java 提交中击败了83.14%的用户
+> 执行用时 :19 ms, 在所有 Java 提交中击败了41.70%的用户
 >
-> 内存消耗 :36.1 MB, 在所有 java 提交中击败了84.12%的用户
+> 内存消耗 :39.7 MB, 在所有 Java 提交中击败了33.33%的用户
+
+另外：加了一个sum记录
+
+```java
+class MapSum {
+    private class Node{
+        private int num; //记录自己的值
+        private int sum; //记录作为前缀，其余的总值
+        private TreeMap<Character, Node> next; //孩子节点们
+
+        private Node(){
+            num = 0;
+            sum = 0;
+            next = new TreeMap<>();
+        }
+    }
+    private Node root;
+    /** Initialize your data structure here. */
+    public MapSum() {
+        root = new Node();
+    }
+    
+    public void insert(String key, int val) {
+        insert(root, key, val, 0);
+    }
+    private int insert(Node root, String key, int val, int index){
+        if(index == key.length()){
+            int res = val - root.num; //返回的要添加的值
+            root.num = val;  
+            root.sum += res;
+            return res;
+        }
+        char c = key.charAt(index);
+        if(root.next.get(c) == null){
+            root.next.put(c, new Node());
+        }
+        int add = insert(root.next.get(c), key, val, index+1);
+        root.sum += add;
+        return add;
+    }
+    
+    public int sum(String prefix) {
+        Node cur = root;
+        for(int i = 0; i < prefix.length(); i ++){
+            char c = prefix.charAt(i);
+            if(cur.next.get(c) == null){
+                return 0;
+            }
+            cur = cur.next.get(c);
+        }
+        return cur.sum;
+    }
+}
+
+/**
+ * Your MapSum object will be instantiated and called as such:
+ * MapSum obj = new MapSum();
+ * obj.insert(key,val);
+ * int param_2 = obj.sum(prefix);
+ */
+```
+
+> 执行用时 :16 ms, 在所有 Java 提交中击败了74.45%的用户
+>
+> 内存消耗 :39.7 MB, 在所有 Java 提交中击败了33.33%的用户
 
 ## 10.3 扩展
 
-最大问题就是空间问题。
+**最大问题就是空间问题**。
 
 为了解决空间问题，设置压缩字典树，即把单列字符合并在一起，但是维护起来就更难了。有得就有失。
 
